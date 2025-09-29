@@ -35,8 +35,17 @@ A custom symmetric encryption algorithm implementation with graphical interface,
 
 ### Building
 ```bash
-git clone https://github.com/yourusername/z-cipher.git
-cd z-cipher
-mkdir build && cd build
-cmake ..
-make
+git clone https://github.com/JimenaD-creator/Encryption-Algorithm.git
+cd Encryption-Algorithm
+```
+### Running
+```bash
+./gui.exe
+```
+### Usage examples 💡
+### Encryption
+- Launch the application
+- Select "Encrypt Text"
+- Enter plaintext (max 100 characters)
+- Provide encryption key (max 16 characters)
+- Save encrypted output to file
