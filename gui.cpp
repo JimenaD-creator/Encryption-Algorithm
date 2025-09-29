@@ -6,19 +6,16 @@
 #include <fstream>
 using namespace std;
 
-const int BLOCK_SIZE = 8; // Tamaño del bloque en bytes
+const int BLOCK_SIZE = 8; 
 
-// Rotate to the left
 unsigned char rotateLeft(unsigned char byte, int n){
     return (byte << n ) | (byte >> (8-n));
 }
 
-// Rotate to the right
 unsigned char rotateRight(unsigned char byte, int n){
     return (byte >> n) | (byte << (8-n));
 }
 
-// Generate key for each round
 vector<unsigned char> generateSubkey(const string& key, const vector<unsigned char>& block, int round){
     vector<unsigned char> subkey;
     for(int i = 0; i < BLOCK_SIZE; i++){
@@ -27,7 +24,6 @@ vector<unsigned char> generateSubkey(const string& key, const vector<unsigned ch
     return subkey;
 }
 
-// Aplicar XOR entre el byte del bloque y el de la subclave
 void confusion(vector<unsigned char> &block, const vector<unsigned char> &subkey, int round){
     for(int i = 0; i < block.size(); i++){
        int tmp = ((block[i] ^ subkey[i % subkey.size()]) + i * i + round * 7);
@@ -39,13 +35,10 @@ void difusion(vector<unsigned char> &block){
     for(int i = 0; i < block.size(); i++){
         block[i] = rotateLeft(block[i], i + 1);
     }
-
-    // Mezcla intrincada: cada byte depende del anterior 
     for(int i = 1; i < block.size(); i++){
         block[i] ^= block[i - 1];
     }
 
-    // Zig zag movement
     vector<unsigned char> temp(block.size());
     for (int i = 0; i < block.size(); i++){
         int j = (i % 2 == 0) ? (block.size() - 1 - i / 2) : (i / 2);
@@ -56,18 +49,15 @@ void difusion(vector<unsigned char> &block){
 
 void inverseDifusion(vector<unsigned char> &block){
     vector<unsigned char> temp(block.size());
-    // Invertir zigzag
     for (int i = 0; i < block.size(); i++){
         int j = (i % 2 == 0) ? (block.size() - 1 - i / 2) : (i / 2);
         temp[i] = block[j];
     }
 
-    // Revertir mezcla intrincada
     for(int i = temp.size() - 1; i >= 1; i--){
         temp[i] ^= temp[i - 1];
     }
 
-    // Deshacer la rotación
     for(int i = 0; i < (int)temp.size(); i++){
         temp[i] = rotateRight(temp[i], i + 1);
     }
@@ -76,19 +66,14 @@ void inverseDifusion(vector<unsigned char> &block){
 
 void inverseConfusion(vector<unsigned char> &block, const vector<unsigned char> &subkey, int round){
     for(int i = 0; i < block.size(); i++){
-        // Restar i*i + round*7 del byte cifrado
         int tmp = (int)block[i] - (int)(i * i) - round * 7;
-
-        // Asegurar que tmp quede en el rango 0..255
         tmp = (tmp % 256 + 256) % 256;
-
-        // Aplicar XOR con la subclave
         block[i] = (unsigned char)(tmp ^ subkey[i % subkey.size()]);
     }
 }
 
 vector<unsigned char> encryptBlock(vector<unsigned char> block, const string &key){
-    for(int round = 0; round < 3; round++){
+    for(int round = 0; round < 5; round++){
         vector<unsigned char> subkey = generateSubkey(key, block, round);
         confusion(block, subkey, round);
         difusion(block);
@@ -97,7 +82,7 @@ vector<unsigned char> encryptBlock(vector<unsigned char> block, const string &ke
 }
 
 vector<unsigned char> decryptBlock(vector<unsigned char> block, const string &key){
-    for(int round = 2; round >= 0; round--){
+    for(int round = 4; round >= 0; round--){
         vector<unsigned char> subkey = generateSubkey(key, block, round);
         inverseDifusion(block);
         inverseConfusion(block, subkey, round);
@@ -105,7 +90,6 @@ vector<unsigned char> decryptBlock(vector<unsigned char> block, const string &ke
     return block;
 }
 
-// Rellenar el bloque para que tenga exactamente BLOCK_SIZE bytes
 vector<unsigned char> padBlock(const vector<unsigned char>& data){
     vector<unsigned char> padded = data;
     int padding = BLOCK_SIZE - (data.size() % BLOCK_SIZE);
@@ -241,7 +225,7 @@ private:
     }
 
 public:
-    CryptoGUI() : window(sf::VideoMode(900, 700), "Advanced Encryption Algorithm - SFML") {
+    CryptoGUI() : window(sf::VideoMode(900, 700), "BitCascade - SFML") {
         if (!font.loadFromFile("arial.ttf")) {
             // Intentar cargar desde ruta común de Windows
             font.loadFromFile("C:/Windows/Fonts/arial.ttf");
@@ -255,7 +239,7 @@ public:
 
     void setupUI() {
         titleText.setFont(font);
-        titleText.setString("Advanced Encryption Algorithm");
+        titleText.setString("BitCascade Algorithm");
         titleText.setCharacterSize(28);
         titleText.setFillColor(sf::Color::Cyan);
         titleText.setPosition(180, 20);
