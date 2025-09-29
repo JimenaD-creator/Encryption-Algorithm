@@ -49,3 +49,11 @@ cd Encryption-Algorithm
 - Enter plaintext (max 100 characters)
 - Provide encryption key (max 16 characters)
 - Save encrypted output to file
+
+### Decryption
+- Choose "Decrypt Text"
+- Select encrypted file
+- Enter decryption key
+- System validates key and decrypts content
+
+Note: This implementation is for educational purposes and should not be used for securing sensitive real-world data.
